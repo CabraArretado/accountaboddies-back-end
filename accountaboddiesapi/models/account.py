@@ -10,10 +10,10 @@ class Account(models.Model):
     email = models.EmailField()
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.user.first_name} {self.user.last_name}'
 
     def get_absolute_url(self):
-        return reverse("Customer_detail", kwargs={"pk": self.pk})
+        return reverse("Account_detail", kwargs={"pk": self.pk})
 
     class Meta:
         verbose_name = ("Account")
