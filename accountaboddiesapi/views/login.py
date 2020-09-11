@@ -6,6 +6,8 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 
 # Function from KennyAPI modified
+
+
 @csrf_exempt
 def login_user(request):
     '''Handles the authentication of a user

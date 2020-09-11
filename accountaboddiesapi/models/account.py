@@ -4,14 +4,17 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-
-class Boddie(models.Model):
+class Account(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    family_members = models.IntegerField()
+    email = models.EmailField()
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+    def get_absolute_url(self):
+        return reverse("Customer_detail", kwargs={"pk": self.pk})
+
     class Meta:
-        ordering = (F('user.date_joined').asc(nulls_last=True),)
+        verbose_name = ("Account")
+        verbose_name_plural = ("Accounts")
