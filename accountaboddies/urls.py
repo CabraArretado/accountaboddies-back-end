@@ -18,11 +18,12 @@ from django.urls import include, path
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.authtoken import views
-from accountaboddiesapi.views import login_user, Accounts
+from accountaboddiesapi.views import login_user, Accounts, Group
 
 router = routers.DefaultRouter(trailing_slash=False)
 # Routes go here
 router.register(r'account', Accounts, 'account')
+router.register(r'group', Group, 'group')
 
 
 urlpatterns = [

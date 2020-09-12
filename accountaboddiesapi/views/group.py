@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from accountaboddiesapi.models import Group
+from accountaboddiesapi.models import Group, Account
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -20,9 +20,11 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
             lookup_field='id'
         )
         fields = ('title', 'created_at', 'created_by', 'size', 'population')
-        depth = 1
+        depth = 2
 
 class Groups(ViewSet):
+
+
 
     def create(self, request):
         """Handle POST operations
@@ -30,23 +32,19 @@ class Groups(ViewSet):
         Returns:
             Response -- JSON serialized User instance
         """
+        user = User.objects.get(pk=request.user.id)
 
-        user = User.objects.create_user(
+        group = Group.objects.create(
             title=request.data["title"],
             created_at=request.data["created_at"],
-            created_by=request.data["created_by"],
+            created_by=user,
             size=request.data["size"],
-            population=request.data["population"]
+            population=1
         )
+        serializer = GroupSerializer(group, context={'request': request})
+        return Response(serializer.data, content_type='application/json')
 
-        account = Account.objects.create(
-            user=user
-        )
 
-        token = Token.objects.create(user=user)
-
-        data = json.dumps({"token": token.key})
-        return HttpResponse(data, content_type='application/json')
 
     def retrieve(self, request, pk=None):
         """Handle GET requests
@@ -55,12 +53,13 @@ class Groups(ViewSet):
             Response -- JSON serialized park area instance
         """
         try:
-            account = Account.objects.get(pk=pk)
-            serializer = AccountSerializer(
-                account, context={'request': request})
+            group = Group.objects.get(pk=pk)
+            serializer = GroupSerializer(group, context={'request': request})
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
+
+
 
     def update(self, request, pk=None):
         """Handle PUT requests
@@ -69,14 +68,17 @@ class Groups(ViewSet):
             Response -- Empty body with 204 status code
         """
 
-        account = Account.objects.get(pk=pk)
+        group = Group.objects.get(pk=pk)
+        group.title = request.data["title"],
+        group.description = request.data["description"],
+        group.size=request.data["size"],
+        group.population = request.data["population"]
 
-        user = User.objects.get(pk=account.user.id)
-        user.first_name = request.data["first_name"]
-        user.last_name = request.data["last_name"]
-        user.save()
+        group.save()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
 
     def destroy(self, request, pk=None):
         """Handle DELETE requests
@@ -85,22 +87,37 @@ class Groups(ViewSet):
             Response -- 200, 404, or 500 status code
         """
         try:
-            user = User.objects.get(pk=pk)
-            user.delete()
+            group = Group.objects.get(pk=pk)
+            group.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        except Account.DoesNotExist as ex:
+        except Group.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def list(self, request):
 
-        if request.user.id:
-            account = Account.objects.filter(user=request.user.id)
-        else:
-            account = Account.objects.all()
-        serializer = AccountSerializer(account, many=True, context={'request': request})
+
+    def list(self, request):
+        """Handle GET requests to product resource
+
+        If no query parameters on request return all products without distinctions, otherwise
+        return the all products with the kewword provided in the title
+
+        Returns:
+            Response -- JSON serialized list of products
+
+        """
+        groups = Group.objects.all()
+        search = self.request.query_params.get('search', None)
+        sort = self.request.query_params.get('sort', None)
+        if sort is not None:
+            groups = groups.order_by(sort)
+        if search is not None:
+            groups = groups.filter(title__contains=search)
+
+        serializer = GroupSerializer(groups, many=True, context={'request': request})
+
         return Response(serializer.data)
