@@ -7,7 +7,6 @@ from django.dispatch import receiver
 class Account(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField()
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
