@@ -29,6 +29,7 @@ The app is supposed to authenticate and provide the data requested from the Fron
 1. ```bash cd accountaboddies-back-end ```
 2. Activate the enviroment. Use ```bash source ./AccountaboddiesEnv/bin/activate ```
 3. Run the server using ```bash python manage.py run server ```
+4. Now you are able to access the database and use POST, GET, PUT and DELETE requistions using the Browsable API. To do that access http://localhost:8000/.
 
 ## Helpers:
 Database structure: https://dbdiagram.io/d/5f58064788d052352cb6724f
