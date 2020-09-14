@@ -18,13 +18,14 @@ from django.urls import include, path
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.authtoken import views
-from accountaboddiesapi.views import login_user, Accounts, Groups, ForumPosts
+from accountaboddiesapi.views import login_user, Accounts, Groups, ForumPosts, Tasks
 
 router = routers.DefaultRouter(trailing_slash=False)
 # Routes go here
 router.register(r'account', Accounts, 'account')
 router.register(r'group', Groups, 'group')
 router.register(r'forum_post', ForumPosts, 'forum_post')
+router.register(r'task', Tasks, 'task')
 
 
 urlpatterns = [
