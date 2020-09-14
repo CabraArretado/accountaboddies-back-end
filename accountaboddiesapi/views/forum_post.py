@@ -8,19 +8,20 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from accountaboddiesapi.models import Group, Account
+from accountaboddiesapi.models import Group, ForumPost
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+
+
+class ForumPostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Group
+        model = ForumPost
         url = serializers.HyperlinkedIdentityField(
             view_name='group',
             lookup_field='id'
         )
-        fields = ('title', 'created_at', 'created_by', 'size', 'population')
-        depth = 2
+        fields = ('user', 'group', 'title', 'content', 'created_at')
+        depth = 1
 
 class Groups(ViewSet):
 
