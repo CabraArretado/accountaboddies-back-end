@@ -120,6 +120,6 @@ class Tasks(ViewSet):
         # if search is not None:
         #     groups = groups.filter(title__contains=search)
 
-        serializer = Serializer(tasks, many=True, context={'request': request})
+        serializer = TaskSerializer(tasks, many=True, context={'request': request})
 
         return Response(serializer.data)
