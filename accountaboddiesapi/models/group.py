@@ -8,10 +8,11 @@ class Group(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=255)
+    # Limit of people in the group
+    size = models.PositiveSmallIntegerField(default=5)
     # One member is the default, if he created the group he is on the group
-    size = models.PositiveSmallIntegerField(default=1) # Limit of people in the group
-    population = models.PositiveSmallIntegerField() # Number of people currently in the group
-
+    # Number of people currently in the group
+    population = models.PositiveSmallIntegerField(default=1) 
     class Meta:
         verbose_name = ("Group")
         verbose_name_plural = ("Groups")
