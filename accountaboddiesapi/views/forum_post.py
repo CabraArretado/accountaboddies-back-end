@@ -17,13 +17,13 @@ class ForumPostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ForumPost
         url = serializers.HyperlinkedIdentityField(
-            view_name='group',
+            view_name='forum_post',
             lookup_field='id'
         )
-        fields = ('user', 'group', 'title', 'content', 'created_at')
+        fields = ('created_by', 'created_at', 'title',  'group', 'content')
         depth = 1
 
-class Groups(ViewSet):
+class ForumPosts(ViewSet):
 
 
 
@@ -31,18 +31,19 @@ class Groups(ViewSet):
         """Handle POST operations
 
         Returns:
-            Response -- JSON serialized User instance
+            Response -- JSON serialized ForumPost instance
         """
-        user = User.objects.get(pk=request.user.id)
+        created_by = User.objects.get(pk=request.auth.user.id)
+        group = Group.objects.get(pk=request.group.id)
 
-        group = Group.objects.create(
-            title=request.data["title"],
-            created_at=request.data["created_at"],
-            created_by=user,
-            size=request.data["size"],
-            population=1
+        forum_post = ForumPost.objects.create(
+            title = request.data["title"],
+            content = request.data["content"],
+            created_by = created_by,
+            group = group
         )
-        serializer = GroupSerializer(group, context={'request': request})
+
+        serializer = ForumPostSerializer(forum_post, context={'request': request})
         return Response(serializer.data, content_type='application/json')
 
 
@@ -54,8 +55,8 @@ class Groups(ViewSet):
             Response -- JSON serialized park area instance
         """
         try:
-            group = Group.objects.get(pk=pk)
-            serializer = GroupSerializer(group, context={'request': request})
+            forum_post = ForumPost.objects.get(pk=pk)
+            serializer = ForumPostSerializer(forum_post, context={'request': request})
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
@@ -68,14 +69,11 @@ class Groups(ViewSet):
         Returns:
             Response -- Empty body with 204 status code
         """
-
-        group = Group.objects.get(pk=pk)
-        group.title = request.data["title"],
-        group.description = request.data["description"],
-        group.size=request.data["size"],
-        group.population = request.data["population"]
-
-        group.save()
+        pass
+        # forum_post = ForumPost.objects.get(pk=pk)
+        # forum_post.title = request.data["title"]
+        # forum_post.content = request.data["content"]
+        # forum_post.save()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
@@ -88,12 +86,12 @@ class Groups(ViewSet):
             Response -- 200, 404, or 500 status code
         """
         try:
-            group = Group.objects.get(pk=pk)
-            group.delete()
+            forum_post = ForumPost.objects.get(pk=pk)
+            forum_post.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        except Group.DoesNotExist as ex:
+        except ForumPost.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as ex:
@@ -104,21 +102,22 @@ class Groups(ViewSet):
     def list(self, request):
         """Handle GET requests to product resource
 
-        If no query parameters on request return all products without distinctions, otherwise
-        return the all products with the kewword provided in the title
+        If no query parameters on request return all forum posts without distinctions, otherwise
+        return the all forum posts with the keyword provided in the title
 
         Returns:
             Response -- JSON serialized list of products
 
         """
-        groups = Group.objects.all()
-        search = self.request.query_params.get('search', None)
-        sort = self.request.query_params.get('sort', None)
-        if sort is not None:
-            groups = groups.order_by(sort)
-        if search is not None:
-            groups = groups.filter(title__contains=search)
 
-        serializer = GroupSerializer(groups, many=True, context={'request': request})
+        forum_posts = ForumPost.objects.all()
+        # search = self.request.query_params.get('search', None)
+        # sort = self.request.query_params.get('sort', None)
+        # if sort is not None:
+        #     groups = groups.order_by(sort)
+        # if search is not None:
+        #     groups = groups.filter(title__contains=search)
+
+        serializer = ForumPostSerializer(forum_posts, many=True, context={'request': request})
 
         return Response(serializer.data)
