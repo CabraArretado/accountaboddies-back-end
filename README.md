@@ -1,11 +1,12 @@
 # accountaboddies-back-end
 
-Back-end repository of my Capstone Accountaboddies build in Django and Django REST. Due date 23th Sep.
-Updates comming. 
+Back-end repository of my Capstone Accountaboddies build in Django and Django REST.
 
-App is not fully working yet!
 
-Installations and Configuration for the Django Rest Framework:
+### Due date 23th Sep. Updates comming. 
+### App is not fully working yet!
+
+## Installations and Configuration for the Django Rest Framework:
 1. Clone the repository to your machine.
 2. cd accountaboddies-back-end
 3. python -m venv AccountaboddiesEnv
