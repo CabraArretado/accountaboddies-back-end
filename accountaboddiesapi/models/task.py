@@ -14,9 +14,9 @@ class Task(models.Model):
     population = models.PositiveSmallIntegerField() # Number of people currently in the group
 
     class Meta:
-        verbose_name = ("Group")
-        verbose_name_plural = ("Groups")
+        verbose_name = ("Task")
+        verbose_name_plural = ("Tasks")
 
 
     def get_absolute_url(self):
-        return reverse("Group_detail", kwargs={"pk": self.pk})
+        return reverse("Task_detail", kwargs={"pk": self.pk})
