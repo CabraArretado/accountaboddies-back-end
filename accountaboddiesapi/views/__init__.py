@@ -1,4 +1,6 @@
 from .login import login_user
 from .user import UserViewSet
+
+# Note that all the views must be in plural
 from .account import Accounts
-from .group import Group
+from .group import Groups
