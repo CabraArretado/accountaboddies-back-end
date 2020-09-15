@@ -1,4 +1,4 @@
-# accountaboddies-back-end
+# Accountaboddies API
 
 Back-end repository of my Capstone Accountaboddies build in Django and Django REST. 
 
