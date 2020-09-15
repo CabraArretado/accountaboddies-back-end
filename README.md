@@ -11,9 +11,9 @@ The API is supposed to authenticate and provide the data requested from the Fron
 ## Installations and Configuration for the Django Rest Framework:
 1. Clone the repository to your machine.
 2. ``` cd accountaboddies-back-end ```
-3. ```python -m venv AccountaboddiesEnv```
+3. Create a virtual enviroment ```python -m venv AccountaboddiesEnv```
 4. Activate the enviroment. Use ``` source ./AccountaboddiesEnv/bin/activate ```
-5. ``` pip install -r requirements.txt ```
+5. Install all the requirements ``` pip install -r requirements.txt ```
 
 
 
