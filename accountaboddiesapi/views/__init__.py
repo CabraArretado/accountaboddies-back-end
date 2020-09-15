@@ -6,3 +6,4 @@ from .account import Accounts
 from .group import Groups
 from .forum_post import ForumPosts
 from .task import Tasks
+from .forum_commentary import ForumCommentaries
