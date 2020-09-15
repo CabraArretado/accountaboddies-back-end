@@ -11,22 +11,22 @@ The app is supposed to authenticate and provide the data requested from the Fron
 ## Installations and Configuration for the Django Rest Framework:
 1. Clone the repository to your machine.
 2. ``` cd accountaboddies-back-end ```
-3. python -m venv AccountaboddiesEnv
+3. ```python -m venv AccountaboddiesEnv```
 4. Activate the enviroment. Use ``` source ./AccountaboddiesEnv/bin/activate ```
 5. ``` pip install -r requirements.txt ```
 
 
 
 ## Create Base Django Tables
-1. ``` cd accountaboddies-back-end ```
+1. Go to the repository on your machine.
 2. Activate the enviroment. Use ``` source ./AccountaboddiesEnv/bin/activate ```
 3. Make the migrations using:
 ``` python manage.py makemigrations  ```
+4. Migrate them using:
 ``` python manage.py migrate ```
-``` python manage.py runserver ```
 
 ## Run the server
-1. ``` cd accountaboddies-back-end ```
+1. Go to the repository on your machine.
 2. Activate the enviroment. Use ``` source ./AccountaboddiesEnv/bin/activate ```
 3. Run the server using ```python manage.py run server ```
 4. Now you are able to access the database and use POST, GET, PUT and DELETE requistions using the Browsable API. To do that access http://localhost:8000/.
