@@ -1,12 +1,12 @@
 # accountaboddies-back-end
 
-Back-end repository of my Capstone Accountaboddies build in Django and Django REST.
+Back-end repository of my Capstone Accountaboddies build in Django and Django REST. 
 
 
 ### Due date 23th September. Updates comming. 
-### App is not fully working yet!
+### API is not fully working yet!
 
-The app is supposed to authenticate and provide the data requested from the Front-End (To be build in React.js)
+The API is supposed to authenticate and provide the data requested from the Front-End (To be build in React.js).
 
 ## Installations and Configuration for the Django Rest Framework:
 1. Clone the repository to your machine.
@@ -25,7 +25,7 @@ The app is supposed to authenticate and provide the data requested from the Fron
 4. Migrate them using:
 ``` python manage.py migrate ```
 
-## Run the server
+## Run the server API
 1. Go to the repository on your machine.
 2. Activate the enviroment. Use ``` source ./AccountaboddiesEnv/bin/activate ```
 3. Run the server using ```python manage.py run server ```
