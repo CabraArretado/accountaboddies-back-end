@@ -36,9 +36,8 @@ class Groups(ViewSet):
 
         group = Group.objects.create(
             title=request.data["title"],
-            created_at=request.data["created_at"],
-            created_by=user,
             size=request.data["size"],
+            created_by=user,
             population=1
         )
         serializer = GroupSerializer(group, context={'request': request})
