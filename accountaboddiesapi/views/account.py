@@ -20,7 +20,9 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
             lookup_field='id'
         )
         fields = ('id', 'user')
-        depth = 1
+        depth = 2
+
+
 
 class Accounts(ViewSet):
 
