@@ -12,15 +12,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from accountaboddiesapi.models import Group, Account
 
-# class GroupSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Group
-#         url = serializers.HyperlinkedIdentityField(
-#             view_name='group',
-#             lookup_field='id'
-#         )
-#         fields = ('title', 'user', 'created_at', 'created_by', 'size', 'population')
-#         depth = 1
+
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
