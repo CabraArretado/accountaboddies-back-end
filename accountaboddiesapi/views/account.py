@@ -12,15 +12,22 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from accountaboddiesapi.models import Account
 
-class AccountSerializer(serializers.HyperlinkedModelSerializer):
+# class AccountSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = Account
+#         url = serializers.HyperlinkedIdentityField(
+#             view_name='account',
+#             lookup_field='id'
+#         )
+#         fields = ('id', 'user')
+#         depth = 1
+class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        url = serializers.HyperlinkedIdentityField(
-            view_name='account',
-            lookup_field='id'
-        )
-        fields = ('id', 'user')
-        depth = 1
+        fields = '__all__'
+        depth = 2
+
+
 
 class Accounts(ViewSet):
 
