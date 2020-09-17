@@ -107,12 +107,19 @@ class Groups(ViewSet):
 
         """
         groups = Group.objects.all()
+
+        # Custom Queries
         search = self.request.query_params.get('search', None)
+        my_groups = self.request.query_params.get('my_groups', None)
         sort = self.request.query_params.get('sort', None)
+
         if sort is not None:
             groups = groups.order_by(sort)
         if search is not None:
             groups = groups.filter(title__contains=search)
+        if my_groups is not None:
+            groups = groups.filter(created_by=request.auth.user.id)
+
 
         serializer = GroupSerializer(groups, many=True, context={'request': request})
 
