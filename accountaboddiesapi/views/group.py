@@ -10,7 +10,9 @@ from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from accountaboddiesapi.models import Group, Account
+from accountaboddiesapi.models import Group, ForumPost, GroupUser
+from .group_user import GroupUserSerializer
+
 
 
 
@@ -37,6 +39,12 @@ class Groups(ViewSet):
             created_by=user,
             population=1
         )
+        group_user = GroupUser.objects.create(
+            user=user,
+            group = group,
+            is_adm = True
+        )
+
         serializer = GroupSerializer(group, context={'request': request})
         return Response(serializer.data, content_type='application/json')
 
@@ -106,21 +114,20 @@ class Groups(ViewSet):
             Response -- JSON serialized list of products
 
         """
-        groups = Group.objects.all()
-
         # Custom Queries
         search = self.request.query_params.get('search', None)
         my_groups = self.request.query_params.get('my_groups', None)
         sort = self.request.query_params.get('sort', None)
 
-        if sort is not None:
-            groups = groups.order_by(sort)
-        if search is not None:
-            groups = groups.filter(title__contains=search)
+        # groups = Group.objects.all()
+        current_user = User.objects.get(pk=request.auth.user.id)
+
+        user_groups = GroupUser.objects.filter(user=current_user).prefetch_related("group")
+
         if my_groups is not None:
-            groups = groups.filter(created_by=request.auth.user.id)
+            user_groups = Group.objects.filter(groupuser__user=request.auth.user)
+        # print(user_groups)
 
-
-        serializer = GroupSerializer(groups, many=True, context={'request': request})
-
+        
+        serializer = GroupSerializer(user_groups, many=True, context={'request': request})
         return Response(serializer.data)

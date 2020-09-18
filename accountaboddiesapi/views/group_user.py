@@ -105,19 +105,13 @@ class GroupUsers(ViewSet):
             Response -- JSON serialized list of products
 
         """
-        group_user = GroupUser.objects.all()
+        user_groups = GroupUser.objects.all()
 
-        # Custom Queries
-        # To check the user's groups the user has to be set True
-        user = self.request.query_params.get('user', None)
-        group = self.request.query_params.get('group', None)
+        # has to send my_groups as true to send back all the relaitons
+        my_groups = self.request.query_params.get('my_groups', None)
 
-        if user is not None:
-            group_user = group_user.filter(user=request.auth.user.id)
-        if group is not None:
-            group_user = group_user.filter(group=group)
+        if my_groups is not None:
+            user_groups = request.auth.user.groupuser_set.all()
 
-
-        serializer = GroupSerializer(groups, many=True, context={'request': request})
-
+        serializer = GroupUserSerializer(user_groups, many=True, context={'request': request})
         return Response(serializer.data)
