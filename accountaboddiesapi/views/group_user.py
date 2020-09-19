@@ -8,22 +8,19 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from accountaboddiesapi.models import Group, ForumPost, GroupUser
-from .group_user import GroupUserSerializer
 
 
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class GroupUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Group
-        fields = '__all__'
+        model = GroupUser
+        fields = ('user', 'group', 'is_adm',  'created_at')
+        depth = 1
 
-class Groups(ViewSet):
-
-
+class GroupUsers(ViewSet):
 
     def create(self, request):
         """Handle POST operations
@@ -33,19 +30,14 @@ class Groups(ViewSet):
         """
         user = User.objects.get(pk=request.user.id)
 
-        group = Group.objects.create(
-            title=request.data["title"],
-            size=request.data["size"],
-            created_by=user,
-            population=1
-        )
+        group = Group.objects.get(pk=request.data["groupId"])
+
         group_user = GroupUser.objects.create(
-            user=user,
             group = group,
-            is_adm = True
+            user = user
         )
 
-        serializer = GroupSerializer(group, context={'request': request})
+        serializer = GroupUserSerializer(group_user, context={'request': request})
         return Response(serializer.data, content_type='application/json')
 
 
@@ -57,8 +49,8 @@ class Groups(ViewSet):
             Response -- JSON serialized park area instance
         """
         try:
-            group = Group.objects.get(pk=pk)
-            serializer = GroupSerializer(group, context={'request': request})
+            group_user = GroupUser.objects.get(pk=pk)
+            serializer = GroupUserSerializer(group_user, context={'request': request})
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
@@ -67,18 +59,17 @@ class Groups(ViewSet):
 
     def update(self, request, pk=None):
         """Handle PUT requests
+        Just changes the the is_adm property 
 
         Returns:
             Response -- Empty body with 204 status code
         """
 
-        group = Group.objects.get(pk=pk)
-        group.title = request.data["title"],
-        group.description = request.data["description"],
-        group.size=request.data["size"],
-        group.population = request.data["population"]
+        group_user = GroupUser.objects.get(pk=pk)
 
-        group.save()
+        group_user.is_adm = request.data["is_adm"]
+
+        group_user.save()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
@@ -91,12 +82,12 @@ class Groups(ViewSet):
             Response -- 200, 404, or 500 status code
         """
         try:
-            group = Group.objects.get(pk=pk)
-            group.delete()
+            group_user = GroupUser.objects.get(pk=pk)
+            group_user.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
 
-        except Group.DoesNotExist as ex:
+        except GroupUser.DoesNotExist as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
 
         except Exception as ex:
@@ -114,22 +105,13 @@ class Groups(ViewSet):
             Response -- JSON serialized list of products
 
         """
-        # Custom Queries
-        search = self.request.query_params.get('search', None)
+        user_groups = GroupUser.objects.all()
+
+        # has to send my_groups as true to send back all the relaitons
         my_groups = self.request.query_params.get('my_groups', None)
-        sort = self.request.query_params.get('sort', None)
-
-        # groups = Group.objects.all()
-        current_user = User.objects.get(pk=request.auth.user.id)
-
-        groups = GroupUser.objects.filter(user=current_user).prefetch_related("group")
 
         if my_groups is not None:
-            groups = Group.objects.filter(groupuser__user=request.auth.user)
-        if search is not None:
-            groups = Group.objects.filter(title__contains=search)
-        # print(user_groups)
+            user_groups = request.auth.user.groupuser_set.all()
 
-        
-        serializer = GroupSerializer(groups, many=True, context={'request': request})
+        serializer = GroupUserSerializer(user_groups, many=True, context={'request': request})
         return Response(serializer.data)
