@@ -122,12 +122,14 @@ class Groups(ViewSet):
         # groups = Group.objects.all()
         current_user = User.objects.get(pk=request.auth.user.id)
 
-        user_groups = GroupUser.objects.filter(user=current_user).prefetch_related("group")
+        groups = GroupUser.objects.filter(user=current_user).prefetch_related("group")
 
         if my_groups is not None:
-            user_groups = Group.objects.filter(groupuser__user=request.auth.user)
+            groups = Group.objects.filter(groupuser__user=request.auth.user)
+        if search is not None:
+            groups = Group.objects.filter(title__contains=search)
         # print(user_groups)
 
         
-        serializer = GroupSerializer(user_groups, many=True, context={'request': request})
+        serializer = GroupSerializer(groups, many=True, context={'request': request})
         return Response(serializer.data)
