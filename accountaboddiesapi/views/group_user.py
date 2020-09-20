@@ -30,7 +30,7 @@ class GroupUsers(ViewSet):
         """
         user = User.objects.get(pk=request.user.id)
 
-        group = Group.objects.get(pk=request.data["groupId"])
+        group = Group.objects.get(pk=request.data["group"])
 
         group_user = GroupUser.objects.create(
             group = group,

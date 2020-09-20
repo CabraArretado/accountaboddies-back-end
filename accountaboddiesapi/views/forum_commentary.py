@@ -112,11 +112,19 @@ class ForumCommentaries(ViewSet):
         return the all forum posts with the keyword provided in the title
 
         Returns:
-            Response -- JSON serialized list of products
+            Response -- JSON serialized list of commentaries
 
         """
-
         forum_commentaries = ForumCommentary.objects.all()
+
+        # Get all the commentaries of specific post 
+        post = self.request.query_params.get('post', None)
+
+        if post is not None:
+            forum_commentaries = forum_commentaries.filter(post=post)
+
+
+
         # search = self.request.query_params.get('search', None)
         # sort = self.request.query_params.get('sort', None)
         # if sort is not None:
