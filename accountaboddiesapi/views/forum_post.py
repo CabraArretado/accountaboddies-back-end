@@ -9,17 +9,13 @@ from rest_framework.decorators import action
 from rest_framework.authtoken.models import Token
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
-from accountaboddiesapi.models import Group, ForumPost
+from accountaboddiesapi.models import Group, ForumPost, ForumCommentary
 
 
 
-class ForumPostSerializer(serializers.HyperlinkedModelSerializer):
+class ForumPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForumPost
-        url = serializers.HyperlinkedIdentityField(
-            view_name='forum_post',
-            lookup_field='id'
-        )
         fields = ('created_by', 'created_at', 'title',  'group', 'content')
         depth = 1
 
@@ -33,14 +29,16 @@ class ForumPosts(ViewSet):
         Returns:
             Response -- JSON serialized ForumPost instance
         """
-        created_by = User.objects.get(pk=request.auth.user.id)
-        group = Group.objects.get(pk=request.group.id)
+        print(request.data)
+        user = User.objects.get(pk=request.auth.user.id)
+        group = Group.objects.get(pk=request.data["group"])
 
         forum_post = ForumPost.objects.create(
-            title = request.data["title"],
-            content = request.data["content"],
-            created_by = created_by,
-            group = group
+            title=request.data["title"],
+            content=request.data["content"],
+            group=group,
+            created_by=user,
+
         )
 
         serializer = ForumPostSerializer(forum_post, context={'request': request})
@@ -106,17 +104,22 @@ class ForumPosts(ViewSet):
         return the all forum posts with the keyword provided in the title
 
         Returns:
-            Response -- JSON serialized list of products
+            Response -- JSON serialized list of posts
 
         """
 
         forum_posts = ForumPost.objects.all()
-        # search = self.request.query_params.get('search', None)
-        # sort = self.request.query_params.get('sort', None)
-        # if sort is not None:
-        #     groups = groups.order_by(sort)
-        # if search is not None:
-        #     groups = groups.filter(title__contains=search)
+
+        group = self.request.query_params.get('group', None)
+        search = self.request.query_params.get('search', None)
+        post = self.request.query_params.get('post', None)
+
+        if post is not None:
+            forum_posts = forum_posts.filter(group=group)
+        if group is not None:
+            forum_posts = forum_posts.filter(group=group)
+        if search is not None:
+            forum_posts = forum_posts.filter(group=group).filter(title__contains=search)
 
         serializer = ForumPostSerializer(forum_posts, many=True, context={'request': request})
 

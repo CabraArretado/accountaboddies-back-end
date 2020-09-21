@@ -127,8 +127,10 @@ class Groups(ViewSet):
         if my_groups is not None:
             groups = Group.objects.filter(groupuser__user=request.auth.user)
         if search is not None:
+            # All the groups the user is not in with the key word
+            mygroups = Group.objects.filter(groupuser__user=request.auth.user)
             groups = Group.objects.filter(title__contains=search)
-        # print(user_groups)
+            groups = groups.difference(mygroups)
 
         
         serializer = GroupSerializer(groups, many=True, context={'request': request})
