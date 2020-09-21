@@ -13,13 +13,9 @@ from accountaboddiesapi.models import Group, ForumPost, ForumCommentary
 
 
 
-class ForumPostSerializer(serializers.HyperlinkedModelSerializer):
+class ForumPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForumPost
-        url = serializers.HyperlinkedIdentityField(
-            view_name='forum_post',
-            lookup_field='id'
-        )
         fields = ('created_by', 'created_at', 'title',  'group', 'content')
         depth = 1
 
@@ -33,14 +29,16 @@ class ForumPosts(ViewSet):
         Returns:
             Response -- JSON serialized ForumPost instance
         """
-        created_by = User.objects.get(pk=request.auth.user.id)
-        group = Group.objects.get(pk=request.group.id)
+        print(request.data)
+        user = User.objects.get(pk=request.auth.user.id)
+        group = Group.objects.get(pk=request.data["group"])
 
         forum_post = ForumPost.objects.create(
-            title = request.data["title"],
-            content = request.data["content"],
-            created_by = created_by,
-            group = group
+            title=request.data["title"],
+            content=request.data["content"],
+            group=group,
+            created_by=user,
+
         )
 
         serializer = ForumPostSerializer(forum_post, context={'request': request})
