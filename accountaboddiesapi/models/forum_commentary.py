@@ -6,7 +6,7 @@ from .forum_post import ForumPost
 class ForumCommentary(models.Model):
 
     # In case the user is deleted the post still there
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, blank=True,
+    user = models.ForeignKey(User, on_delete=models.SET_NULL,
     null=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     post = models.ForeignKey(ForumPost, on_delete=models.CASCADE)
