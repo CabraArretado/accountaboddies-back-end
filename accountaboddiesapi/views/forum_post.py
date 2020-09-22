@@ -16,7 +16,7 @@ from accountaboddiesapi.models import Group, ForumPost, ForumCommentary
 class ForumPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForumPost
-        fields = ('created_by', 'created_at', 'title',  'group', 'content')
+        fields = ('id', 'created_by', 'created_at', 'title',  'group', 'content')
         depth = 1
 
 class ForumPosts(ViewSet):
