@@ -13,14 +13,11 @@ from accountaboddiesapi.models import Group, Task
 
 
 
-class TaskSerializer(serializers.HyperlinkedModelSerializer):
+class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        url = serializers.HyperlinkedIdentityField(
-            view_name='task',
-            lookup_field='id'
-        )
-        fields = ('title', 'created_by', 'created_at', 'group', 'description', 'due', 'done')
+
+        fields = ('id', 'title', 'created_by', 'created_at', 'group', 'description', 'due', 'done')
         depth = 1
 
 class Tasks(ViewSet):
@@ -34,7 +31,7 @@ class Tasks(ViewSet):
             Response -- JSON serialized ForumPost instance
         """
         created_by = User.objects.get(pk=request.auth.user.id)
-        group = Group.objects.get(pk=request.group.id)
+        group = Group.objects.get(pk=request.data["group"])
 
         task = Task.objects.create(
             title = request.data["title"],
@@ -53,7 +50,7 @@ class Tasks(ViewSet):
         """Handle GET requests
 
         Returns:
-            Response -- JSON serialized park area instance
+            Response -- JSON serialized instance
         """
         try:
             task = Task.objects.get(pk=pk)
@@ -113,12 +110,11 @@ class Tasks(ViewSet):
         """
 
         tasks = Task.objects.all()
-        # search = self.request.query_params.get('search', None)
-        # sort = self.request.query_params.get('sort', None)
-        # if sort is not None:
-        #     groups = groups.order_by(sort)
-        # if search is not None:
-        #     groups = groups.filter(title__contains=search)
+
+        group = self.request.query_params.get('group', None)
+
+        if group is not None:
+            tasks = tasks.filter(group=group)
 
         serializer = TaskSerializer(tasks, many=True, context={'request': request})
 
